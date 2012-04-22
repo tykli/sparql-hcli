@@ -1,0 +1,195 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<title>*QL</title>
+<!--[if ie]><meta http-equiv="X-UA-Compatible" content="IE=edge" /><![endif]-->
+<meta name="keywords" content="sparql, query, sparql query, query frontend, frontend, sparql endpoint, endpoint, endpoints, sparql endpoints">
+<meta name="description" content="Frontend to query public SPARQL endpoint">
+<meta name="author" content="Andrea Giacobino">
+<meta name="application-name" content="*QL Query Frontend">
+<link rel="stylesheet" href="css/bootstrap.min.css" />
+<link rel="stylesheet" href="css/codemirror.css" />
+<script src="js/jquery-1.7.2.min.js"></script>
+<script src="js/bootstrap.min.js"></script>
+<script type="text/javascript" src="js/codemirror.js"></script>
+<script type="text/javascript" src="js/sparql.js"></script>
+<script type="text/javascript" src="js/ql.js"></script>
+<style type="text/css">
+html,body {
+	height: 100%;
+	color: #fefefe;
+	background-color: #333;
+}
+
+.CodeMirror,.options {
+	border: 1px solid #333;
+	background-color: #fff;
+	border: 1px solid #eee;
+	border: 1px solid rgba(0, 0, 0, 0.05);
+	-webkit-border-radius: 4px;
+	-moz-border-radius: 4px;
+	border-radius: 4px;
+	-webkit-box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.05);
+	-moz-box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.05);
+	box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.05);
+}
+
+.CodeMirror-scroll,.resultContainer {
+	height: auto;
+	overflow-x: auto;
+	overflow-y: auto;
+	max-height: 900px;
+}
+
+.navbar-top {
+	margin-bottom: 20px;
+}
+
+.options {
+	padding-top: 28px;
+	padding-bottom: 28px;
+}
+
+#resultBox {
+	background-color: #fefefe;
+}
+
+td,th {
+	color: #333;
+}
+
+.label,.white {
+	color: #fefefe;
+}
+
+.brand,.arrow {
+	font-size: 20px;
+}
+
+.wrapper {
+	min-height: 100%;
+	height: auto !important;
+	height: 100%;
+	margin: 0 auto -22px;
+	/* the bottom margin is the negative value of the footer's height */
+}
+
+.footer,.push {
+	height: 22px; /* .push must be the same height as .footer */
+}
+
+.row {
+	margin-bottom: 10px;
+}
+</style>
+</head>
+<body>
+ <div class="wrapper">
+  <nav class="navbar navbar-top">
+   <div class="navbar-inner">
+    <div class="container">
+     <a class="brand"><span style="color: #FAA732;">&#10033;</span>QL</a>
+     
+    </div>
+   </div>
+  </nav>
+  <div class="container">
+   <div class="row">
+    <form class="form-inline" id="queryForm" action="/s/sparql">
+     <div class="pull-left">
+      <input type="url" name="gc" class="input-xlarge"> <select name="g" id="endpoints" class="input-large">
+       <option value="http://dbpedia.org/sparql" selected>DBpedia</option>
+       <option value="http://dbtune.org/classical/sparql/">DBTune.org/classical</option>
+       <option value="http://services.data.gov/sparql">Data.gov</option>
+       <option value="http://semantic.eea.europa.eu/sparql">European Nature Information System</option>
+       <option value="http://geo.linkeddata.es/sparql">GeoLinkedData</option>
+       <option value="http://ibm.rkbexplorer.com/sparql/">IBM Research GmbH (RKBExplorer)</option>
+       <option value="http://ieee.rkbexplorer.com/sparql/">IEEE Papers (RKBExplorer)</option>
+       <option value="http://sparql.linkedopendata.it/musei">Italian Museums</option>
+       <option value="http://data.linkedmdb.org/sparql">Linked Movie DataBase</option>
+       <option value="http://api.talis.com/stores/openlibrary/services/sparql">Open Library data mirror in the Talis Platform</option>
+       <option value="http://labs.mondeca.com/endpoint/ends">SPARQL Endpoint Status</option>
+       <option value="http://europeana-triplestore.isti.cnr.it/sparql">Europeana Linked Open Data</option>
+       <option value="http://api.talis.com/stores/wordnet/services/sparql">WordNet 3.0 (VU Amsterdam)</option>
+      </select> <span class="arrow">&#8701; Endpoint<br /></span>
+      <p class="help-block">
+       <label class="checkbox white">custom?<input type="checkbox" name="custom"></label>
+      </p>
+     </div>
+     <div class="pull-right">
+      <span class="arrow">Saved query &#8702;</span> <select id="sessionQueries" class="input-large">
+      </select>
+     </div>
+    </form>
+   </div>
+   <div class="row">
+    <span style="color: #F5F5F5; line-height: 20px;" data-toggle="collapse" data-target="#prefContainer" class="pull-left"> <i class="icon-chevron-right icon-white"></i>prefixes
+    </span>
+    <div id="prefContainer" class="collapse out span11 pull-right">
+     <label class="checkbox span0 white"><input type="checkbox" name="prefix" value="PREFIX rdf:&lt;http://www.w3.org/1999/02/22-rdf-syntax-ns#&gt;" checked>rdf:</label> <label class="checkbox span0 white"><input type="checkbox" name="prefix" value="PREFIX rdfs: &lt;http://www.w3.org/2000/01/rdf-schema#&gt;" checked>rdfs:</label> <label class="checkbox span0 white"><input type="checkbox" name="prefix" value="PREFIX xsd: &lt;http://www.w3.org/2001/XMLSchema#&gt;" checked>xsd:</label> <label class="checkbox span0 white"><input type="checkbox" name="prefix" value="PREFIX owl: &lt;http://www.w3.org/2002/07/owl#&gt;" checked>owl:</label> <label class="checkbox span0 white"><input type="checkbox" name="prefix" value="PREFIX foaf: &lt;http://xmlns.com/foaf/0.1/&gt;" checked>foaf:</label> <label class="checkbox span0 white"><input type="checkbox" name="prefix" value="PREFIX skos: &lt;http://www.w3.org/2004/02/skos/core#&gt;" checked>skos:</label>
+     <label class="checkbox span0 white"><input type="checkbox" name="prefix" value="PREFIX dc:   &lt;http://purl.org/dc/elements/1.1/&gt;" checked>dc:</label> <label class="checkbox span0 white"><input type="checkbox" name="prefix" value="PREFIX void: &lt;http://rdfs.org/ns/void#&gt;" checked>void:</label> <label class="checkbox span0 white"><input type="checkbox" name="prefix" value="PREFIX doap: &lt;http://usefulinc.com/ns/doap#&gt;" checked>doap:</label> <label class="checkbox span0 white"><input type="checkbox" name="prefix" value="PREFIX bio: &lt;http://purl.org/vocab/bio/0.1/&gt;" checked>bio:</label> <label class="checkbox span0 white"><input type="checkbox" name="prefix" value="PREFIX dcterms: &lt;http://purl.org/dc/terms/&gt;" checked>dcterms:</label> <label class="checkbox span0 white"><input type="checkbox" name="prefix" value="PREFIX ends: &lt;http://labs.mondeca.com/vocab/endpointStatus#&gt;" checked>ends:</label>
+    </div>
+   </div>
+   <div class="row">
+    <!-- <h3>Query</h3>  -->
+    <textarea id="sparqlQuery" name="q">
+
+#write your query  
+ 
+select ?s ?p ?o where {
+ ?s ?p ?o .
+}
+limit 10
+
+# for a list of public endpoints visit http://labs.mondeca.com/sparqlEndpointsStatus/
+# or select "SPARQL Endpoint Status" from the above list and run this query: 
+
+# SELECT distinct ?title ?endpoint
+# WHERE{
+# ?dataset void:sparqlEndpoint ?endpoint;
+#          dcterms:title ?title;
+# }
+
+# Disclaimer:
+# We are not associated in any way with mondeca. 
+
+   </textarea>
+   </div>
+   <div class="row">
+    <a id="queryFull" href="#" class="btn go btn-success input-medium">Query</a> <a id="querySelected" class="btn go btn-success input-medium">Query Selection</a> <a class="btn go btn-info pull-right input-medium" data-toggle="modal" href="#saveForm">Save</a>
+   </div>
+   <div class="row">
+    <div class="msg"></div>
+   </div>
+   <div id="results" class="row hidden">
+    <h3>
+     <small id="swr" class="elapsed"></small> <small id="sw" class="elapsed"></small>
+    </h3>
+    <div class="resultContainer">
+     <table id="resultBox" class="table table-striped table-bordered table-condensed">
+     </table>
+    </div>
+   </div>
+  </div>
+  <!-- save form -->
+  <div class="modal hide fade in" id="saveForm">
+   <div class="modal-header">
+    <a class="close" data-dismiss="modal">×</a>
+    <h3>Save Session</h3>
+   </div>
+   <div class="modal-body">
+    <input id="sessionName" type="text" name="sessionName" placeholder="write here this session name" required>
+    <p class="help-block warning">Beware!! Session are saved in the browser storage, do not rely too much on it ;)</p>
+   </div>
+   <div class="modal-footer">
+    <a href="#" class="btn" data-dismiss="modal">Close</a> <a id="saveBtn" href="#" data-dismiss="modal" class="btn btn-primary">Just do it</a>
+   </div>
+  </div>
+  
+ </div>
+ <div class="footer navbar-inner pagination-centered" style="">
+  <p class="">&copy; tyk.li 2012</p>
+ </div>
+</body>
+</html>
