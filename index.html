@@ -1,3 +1,4 @@
+
 <!doctype html>
 <html lang="en">
 <head>
@@ -10,11 +11,14 @@
 <meta name="application-name" content="*QL Query Frontend">
 <link rel="stylesheet" href="css/bootstrap.min.css" />
 <link rel="stylesheet" href="css/codemirror.css" />
-<script src="js/jquery-1.7.2.min.js"></script>
+<script src="http://code.jquery.com/jquery.min.js"></script>
 <script src="js/bootstrap.min.js"></script>
 <script type="text/javascript" src="js/codemirror.js"></script>
 <script type="text/javascript" src="js/sparql.js"></script>
 <script type="text/javascript" src="js/ql.js"></script>
+<script type="text/javascript">
+	
+</script>
 <style type="text/css">
 html,body {
 	height: 100%;
@@ -35,12 +39,13 @@ html,body {
 	box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.05);
 }
 
-.CodeMirror-scroll,.resultContainer {
+.CodeMirror-scroll, .resultContainer{
 	height: auto;
 	overflow-x: auto;
 	overflow-y: auto;
-	max-height: 900px;
 }
+
+
 
 .navbar-top {
 	margin-bottom: 20px;
@@ -70,18 +75,22 @@ td,th {
 .wrapper {
 	min-height: 100%;
 	height: auto !important;
-	height: 100%;
-	margin: 0 auto -22px;
+    height: 100%;
+	margin: 0 auto -50px;
 	/* the bottom margin is the negative value of the footer's height */
 }
-
 .footer,.push {
-	height: 22px; /* .push must be the same height as .footer */
+	height: 50px; /* .push must be the same height as .footer */
 }
 
 .row {
 	margin-bottom: 10px;
 }
+
+.modal-body {
+	color: #222;
+}
+
 </style>
 </head>
 <body>
@@ -90,7 +99,6 @@ td,th {
    <div class="navbar-inner">
     <div class="container">
      <a class="brand"><span style="color: #FAA732;">&#10033;</span>QL</a>
-     
     </div>
    </div>
   </nav>
@@ -143,7 +151,7 @@ select ?s ?p ?o where {
 limit 10
 
 # for a list of public endpoints visit http://labs.mondeca.com/sparqlEndpointsStatus/
-# or select "SPARQL Endpoint Status" from the above list and run this query: 
+# or select SPARQL Endpoint Status and run this query 
 
 # SELECT distinct ?title ?endpoint
 # WHERE{
@@ -152,7 +160,7 @@ limit 10
 # }
 
 # Disclaimer:
-# We are not associated in any way with mondeca. 
+# We are not associated in any way with mondeca, just found it the link on da interweb ;) 
 
    </textarea>
    </div>
@@ -172,24 +180,11 @@ limit 10
     </div>
    </div>
   </div>
-  <!-- save form -->
-  <div class="modal hide fade in" id="saveForm">
-   <div class="modal-header">
-    <a class="close" data-dismiss="modal">×</a>
-    <h3>Save Session</h3>
-   </div>
-   <div class="modal-body">
-    <input id="sessionName" type="text" name="sessionName" placeholder="write here this session name" required>
-    <p class="help-block warning">Beware!! Session are saved in the browser storage, do not rely too much on it ;)</p>
-   </div>
-   <div class="modal-footer">
-    <a href="#" class="btn" data-dismiss="modal">Close</a> <a id="saveBtn" href="#" data-dismiss="modal" class="btn btn-primary">Just do it</a>
-   </div>
-  </div>
-  
+  <!-- :~ content -->
+  <div class="push"></div>
  </div>
- <div class="footer navbar-inner pagination-centered" style="">
-  <p class="">&copy; tyk.li 2012</p>
+ <div class="footer pagination-centered">
+  <p  style="font-size: 1.5em;">&#9730;</p>
  </div>
 </body>
 </html>

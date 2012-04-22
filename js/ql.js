@@ -1,5 +1,13 @@
+//url of the page that proxy the requests
+var proxyPageUrl = "proxy.php"
+	
+/*
+ * 
+ */	
 var editor;
 var stopWatch = 0;
+
+
 $(document).ready(function() {
 	editor = CodeMirror.fromTextArea(document.getElementById("sparqlQuery"), {
 		mode : "application/x-sparql-query",
@@ -162,6 +170,8 @@ function executeQuery(queryString) {
 	// clerar result and error
 	$("#resultBox").empty();
 	$('.msg').empty();
+	$('#results').addClass("hidden");
+	
 
 	var endpoint = getEndpointUrl();
 	// get selected endpoint
@@ -183,7 +193,7 @@ function executeQuery(queryString) {
 
 	// run query
 	var xhr = $.ajax({
-		url : "proxy.php",
+		url : proxyPageUrl,
 		type : 'POST',
 		dataType : "text",
 		data : {
@@ -193,7 +203,7 @@ function executeQuery(queryString) {
 	});
 
 	// on complete stop the stopwatch
-	xhr.complete(function() {
+	xhr.always(function() {
 		var elapsed = new Date().getTime() - stopWatch;
 		$('#sw').text("(" + (elapsed / 1000) + "s)");
 	});
