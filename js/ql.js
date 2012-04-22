@@ -1,11 +1,10 @@
 //url of the page that proxy the requests
-var proxyPageUrl = "proxy.php"
+var proxyPageUrl = "proxy"
 	
 /*
  * 
  */	
 var editor;
-var stopWatch = 0;
 
 
 $(document).ready(function() {
@@ -17,16 +16,6 @@ $(document).ready(function() {
 	});
 
 	displaySessionList(listSessions());
-
-	$(".loading").hide();
-	$.ajaxSetup({
-		beforeSend : function(x, y) {
-			$(".loading").show();
-		},
-		complete : function(x, y) {
-			$(".loading").hide();
-		}
-	});
 
 	$('input[name="gc"]').hide();
 	$('input[name="custom"]').on('change', function() {
@@ -167,12 +156,6 @@ function getEndpointUrl() {
 }
 
 function executeQuery(queryString) {
-	// clerar result and error
-	$("#resultBox").empty();
-	$('.msg').empty();
-	$('#results').addClass("hidden");
-	
-
 	var endpoint = getEndpointUrl();
 	// get selected endpoint
 	if ($('input[name="custom"]').is(":checked")) {
@@ -187,9 +170,12 @@ function executeQuery(queryString) {
 	});
 
 	// reset stopwatch
-	stopWatch = new Date().getTime();
-	$('#sw').text("---");
-	$('#swr').text("");
+	var stopWatch = new Date().getTime();
+	var timer = $.timer(1000, function(){
+		var elapsed = new Date().getTime() - stopWatch;
+		$('#sw').text("running..."+Math.round(elapsed / 1000) + "s");
+	});
+	
 
 	// run query
 	var xhr = $.ajax({
@@ -199,22 +185,37 @@ function executeQuery(queryString) {
 		data : {
 			url : endpoint,
 			query : prefixes + queryString,
+		},
+		beforeSend:function(jqXHR, settings){
+			// clerar result and error
+			$("#resultBox").empty();
+			$('.msg').empty();
+			$('#resultContainer').addClass("hidden");
+			$('#sw').text("");
+			$('#swr').text("");
+			// start timer
 		}
 	});
 
 	// on complete stop the stopwatch
 	xhr.always(function() {
+		// stop timer
+		timer.stop();
 		var elapsed = new Date().getTime() - stopWatch;
-		$('#sw').text("(" + (elapsed / 1000) + "s)");
+		$('#sw').text("(" + (elapsed / 1000) + "s) ").after("rendering...");
+		
 	});
 
 	// build result table
 	xhr.done(function(data) {
-		$('#results').removeClass("hidden");
+		
+		$('#resultContainer').removeClass("hidden");
 		var ct = xhr.getResponseHeader("Content-Type");
 		var table = $("#resultBox");
 		var c = 0;
+		
 		if (ct.indexOf('xml') >= 0) {
+			$('#sw').after("");
 			var xml = $.parseXML(data);
 
 			var tr = $('<tr></tr>');
@@ -243,11 +244,14 @@ function executeQuery(queryString) {
 			displayError("Error", data);
 		}
 	});
+	
 
 	// display error messagge on result
 	xhr.fail(function(jqXHR, textStatus) {
 		displayError(jqXHR.status, jqXHR.responseText);
 	});
+	
+	
 
 	// show error messagge
 	function displayError(status, message, html) {

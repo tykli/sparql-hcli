@@ -12,6 +12,7 @@
 <link rel="stylesheet" href="css/bootstrap.min.css" />
 <link rel="stylesheet" href="css/codemirror.css" />
 <script src="http://code.jquery.com/jquery.min.js"></script>
+<script src="js/jquery.timer.min.js"></script>
 <script src="js/bootstrap.min.js"></script>
 <script type="text/javascript" src="js/codemirror.js"></script>
 <script type="text/javascript" src="js/sparql.js"></script>
@@ -39,7 +40,7 @@ html,body {
 	box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.05);
 }
 
-.CodeMirror-scroll, .resultContainer{
+.CodeMirror-scroll, #resultContainer{
 	height: auto;
 	overflow-x: auto;
 	overflow-y: auto;
@@ -91,6 +92,17 @@ td,th {
 	color: #222;
 }
 
+.em:AFTER {
+	content: '\0070\0075\0073\0068\0040\0074\0079\006B\002E\006C\0069';
+    color:#FAA732;
+    text-decoration: underline;
+    -webkit-touch-callout: all;
+-webkit-user-select: all;
+-khtml-user-select: all;
+-moz-user-select: all;
+-ms-user-select: all;
+user-select: all;
+}
 </style>
 </head>
 <body>
@@ -165,19 +177,33 @@ limit 10
    </textarea>
    </div>
    <div class="row">
-    <a id="queryFull" href="#" class="btn go btn-success input-medium">Query</a> <a id="querySelected" class="btn go btn-success input-medium">Query Selection</a> <a class="btn go btn-info pull-right input-medium" data-toggle="modal" href="#saveForm">Save</a>
+    <a id="queryFull" href="#resultContainer" class="btn go btn-success input-medium">Query</a> <a href="#resultContainer" id="querySelected" class="btn go btn-success input-medium">Query Selection</a> <a class="btn go btn-info pull-right input-medium" data-toggle="modal" href="#saveForm">Save</a>
    </div>
    <div class="row">
     <div class="msg"></div>
    </div>
-   <div id="results" class="row hidden">
+   <div id="results" class="row">
     <h3>
      <small id="swr" class="elapsed"></small> <small id="sw" class="elapsed"></small>
     </h3>
-    <div class="resultContainer">
+    <div id="resultContainer" class="hidden">
      <table id="resultBox" class="table table-striped table-bordered table-condensed">
      </table>
     </div>
+   </div>
+  </div>
+  <!-- save form -->
+  <div class="modal hide fade in" id="saveForm">
+   <div class="modal-header">
+    <a class="close" data-dismiss="modal">×</a>
+    <h3>Save Session</h3>
+   </div>
+   <div class="modal-body">
+    <input id="sessionName" type="text" name="sessionName" placeholder="write here this session name" required>
+    <p class="help-block warning">Beware!! Session are saved in the browser storage, do not rely too much on it ;)</p>
+   </div>
+   <div class="modal-footer">
+    <a href="#" class="btn" data-dismiss="modal">Close</a> <a id="saveBtn" href="#" data-dismiss="modal" class="btn btn-primary">Just do it</a>
    </div>
   </div>
   <!-- :~ content -->
