@@ -1,5 +1,5 @@
 //url of the page that proxy the requests
-var proxyPageUrl = "proxy"
+var proxyPageUrl = "proxy.php";
 	
 /*
  * 
@@ -27,6 +27,17 @@ $(document).ready(function() {
 		var index = saveSession();
 		displaySessionList(listSessions(), index);
 	});
+	
+	$('#prefixesBtn').on('click', function() {
+		var i = $(this).children('i');
+		if(i.hasClass("icon-chevron-right")){
+			i.removeClass("icon-chevron-right").addClass("icon-chevron-down");
+		} else{
+			i.removeClass("icon-chevron-down").addClass("icon-chevron-right");
+		}
+	});
+	
+	
 
 	$('#sessionQueries').on('change', function() {
 		var s = loadSession($(this).val());
